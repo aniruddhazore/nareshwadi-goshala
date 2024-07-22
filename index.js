@@ -51,7 +51,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     from: "dairytrack@gmail.com",
     to: email,
     subject: "Email verification",
-    text: `Please click on the link to verify your email: http://192.168.36.114:3000/verify/${verificationToken}`,
+    text: `Please click on the link to verify your email: http://nareshwadi-goshala.onrender.com/verify/${verificationToken}`,
   };
 
   try {
