@@ -19,6 +19,14 @@ const milkSchema = new mongoose.Schema({
         type: Number,
         required: false,
       },
+      milkman1: {
+        type: String,
+        required: false,
+      },
+      milkman2: {
+        type: String,
+        required: false,
+      }
     },
   ],
 

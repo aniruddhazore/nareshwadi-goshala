@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   userType: {
     type: String,
-    enum: ["Superuser", "Admin", "User"],
+    enum: ["Superuser", "Admin", "User", "Milkman"],
     default: "user",
   },
   verified: {
@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   verificationToken: String,
-  profileImage: String,
   userDescription: {
     type: String,
     default: null,
