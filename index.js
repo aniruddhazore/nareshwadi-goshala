@@ -1370,6 +1370,8 @@ app.get("/getReports", async (req, res) => {
             milkingCapacity: cattle.milkCapacity,
             session1: session.sess1 || 0,
             session2: session.sess2 || 0,
+            milkman1: session.milkman1 || "N/A",
+            milkman2: session.milkman2 || "N/A",  
             total:
               (parseFloat(session.sess1) || 0) +
               (parseFloat(session.sess2) || 0),
