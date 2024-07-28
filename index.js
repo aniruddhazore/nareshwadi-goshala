@@ -15,7 +15,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 mongoose
-  .connect("mongodb+srv://dbUser:abcd1234@cluster0.zqc82gq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
+  .connect("mongodb+srv://rhea:rhea@cluster0.jqougfx.mongodb.net/", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
   .then(() => {
     console.log("Connected to MongoDB");
@@ -54,8 +56,8 @@ const sendVerificationEmail = async (recipientDetails) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "rheacode@gmail.com",
-      pass: "bwchfojovfakrqtv",
+      user: "nareshwadi.gaushalaapp@somaiya.edu",
+      pass: "kfvgcwmmdeeewwjm",
     },
   });
 
@@ -67,17 +69,77 @@ const sendVerificationEmail = async (recipientDetails) => {
     from: "dairytrack@gmail.com",
     to: email,
     subject: "Welcome to Nareshwadi Dairy App",
-    text: `
-Hello ${name},
-
-You have been added as a ${userType} to Nareshwadi Dairy App.
-You can login to the app using the given email id and password.
-
-email: ${email}
-password: ${password}
-
-Before logging in, make sure to verify your email by clicking on the following link:
-https://nareshwadi-goshala.onrender.com/verify/${verificationToken}
+    html: `
+<div
+      style="
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        color: #333;
+        max-width: 600px;
+        margin: auto;
+      "
+    >
+      <div
+        style="
+          background-color: #b592ff;
+          color: white;
+          padding: 20px;
+          border-radius: 8px;
+          text-align: center;
+        "
+      >
+        <img
+          src="../assets/logo-new-dairy.png"
+          alt="Logo"
+          style="
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+          "
+        />
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700">
+          Welcome to Nareshwadi Dairy App
+        </h1>
+      </div>
+      <div style="margin-top: 20px; padding: 20px">
+        <p>Hello ${name},</p>
+        <p>
+          You have been added as a ${userType} to Nareshwadi Dairy App. You can
+          login to the app using the given email id and password.
+        </p>
+        <div
+          style="
+            border: 1px solid #4a90e2;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #4a90e2;
+            color: #fff;
+            margin-bottom: 20px;
+          "
+        >
+          <p style="margin: 0; font-weight: bold">Email:</p>
+          <p style="margin: 0">${email}</p>
+          <br />
+          <p style="margin: 0; font-weight: bold">Password:</p>
+          <p style="margin: 0">${password}</p>
+        </div>
+        <p>
+          Before logging in, make sure to verify your email by clicking on the
+          following link:
+        </p>
+        <a
+          href="http://localhost:3000/verify/${verificationToken}"
+          style="color: #4a90e2; text-decoration: none; font-weight: bold"
+          >Verify Email</a
+        >
+        <p style="background-color: rgb(126, 214, 153); color: white; padding:10px;border-radius:5px">
+          Note: You can change the password to whatever you wish once you log in.
+        </p>
+      </div>
+    </div>
 `,
   };
 
@@ -94,19 +156,83 @@ https://nareshwadi-goshala.onrender.com/verify/${verificationToken}
     from: "dairytrack@gmail.com",
     to: superusers.map((user) => user.email),
     subject: "New User Added",
-    text: `
-Hello Superuser,
-
-A new user has been added to the Nareshwadi Dairy App.
-
-Name: ${name}
-Email: ${email}
-User Type: ${userType}
-
-The user will need to verify their email address before logging in. You can view and manage users from your admin panel.
-
-Thank you,
-Nareshwadi Dairy App
+    html: `
+<div
+      style="
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        color: #333;
+        max-width: 600px;
+        margin: auto;
+      "
+    >
+      <div
+        style="
+          background-color: #b592ff;
+          color: white;
+          padding: 20px;
+          border-radius: 8px;
+          text-align: center;
+        "
+      >
+        <img
+        
+          src="../assets/logo-new-dairy.png"
+          alt="Logo"
+          style="
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+          "
+        />
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700">
+          Notification from Nareshwadi Dairy App
+        </h1>
+      </div>
+      <div style="margin-top: 20px; padding: 20px">
+        <p>Hello Superuser,</p>
+        <p
+          style="
+            margin: 0;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 4px solid #b592ff;
+            border-radius: 4px;
+          "
+        >
+          A new user has been added to the Nareshwadi Dairy App.
+        </p>
+        <div
+          style="
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #4a90e2;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          "
+        >
+          <p style="margin: 0; font-weight: bold">Name:</p>
+          <p style="margin: 0">${name}</p>
+          <br />
+          <p style="margin: 0; font-weight: bold">Email:</p>
+          <p style="margin: 0">${email}</p>
+          <br />
+          <p style="margin: 0; font-weight: bold">User Type:</p>
+          <p style="margin: 0">${userType}</p>
+        </div>
+        <p style="margin-top: 20px">
+          The user will need to verify their email address before logging in.
+          You can view and manage users from your admin panel.
+        </p>
+        <p>Thank you,</p>
+        <p>Nareshwadi Dairy App</p>
+      </div>
+    </div>
 `,
   };
 
@@ -194,7 +320,7 @@ app.get("/verify/:token", async (req, res) => {
     }
 
     user.verified = true;
-    user.verificationToken = undefined; // Clear the token after successful verification
+    // user.verificationToken = undefined; // Clear the token after successful verification
     await user.save();
 
     res.status(200).json({ message: "Email verified successfully" });
@@ -307,7 +433,6 @@ app.put("/users/:id/password", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // Endpoint to add new cattle
 app.post("/addCattle", async (req, res) => {
@@ -467,7 +592,6 @@ app.delete("/deleteCattle/:id", async (req, res) => {
     res.status(500).send({ message: "Error deleting cattle" });
   }
 });
-
 
 // Group Endpoints
 app.post("/addGroup", async (req, res) => {
@@ -1061,8 +1185,8 @@ const calculateTotalYield = async () => {
 const transporter1 = nodemailer.createTransport({
   service: "gmail", // e.g., 'gmail'
   auth: {
-    user: "rheacode@gmail.com",
-    pass: "bwchfojovfakrqtv",
+    user: "nareshwadi.gaushalaapp@somaiya.edu",
+    pass: "kfvgcwmmdeeewwjm",
   },
 });
 
@@ -1077,7 +1201,7 @@ const sendEmailWeekly = async (totalYield) => {
 
     const emailPromises = users.map((user) => {
       const mailOptions = {
-        from: "rheacode@gmail.com",
+        from: "nareshwadi.gaushalaapp@somaiya.edu",
         to: user.email,
         subject: "Weekly Milk Yield Report",
         text: `The total milk yield this week was: ${totalYield} liters.`,
@@ -1159,16 +1283,18 @@ const sendEmailDaily = async () => {
       // Construct the table content for email
       const emailContent = `
         <h1>Daily Milk Alerts</h1>
+        <p>the following cattle have been producing milk below their expected threshold. Please take a moment to review their status:</p>
         <table style="border-collapse: collapse; width: 100%;">
           <thead>
-            <tr>
-              <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Cattle Name</th>
-              <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Capacity/session</th>
-              <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 1</th>
-              <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 2</th>
-              <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Date</th>
-            </tr>
-          </thead>
+  <tr style="background-color: #4c669f; color: white;">
+    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Cattle Name</th>
+    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Capacity / Session</th>
+    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 1</th>
+    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 2</th>
+    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Date</th>
+  </tr>
+</thead>
+
           <tbody>
             ${alerts
               .map(
@@ -1189,7 +1315,7 @@ const sendEmailDaily = async () => {
       `;
 
       const mailOptions = {
-        from: "rheacode@gmail.com",
+        from: "nareshwadi.gaushalaapp@somaiya.edu",
         to: user.email,
         subject: "Daily Milk Yield Report",
         html: emailContent,
@@ -1206,8 +1332,10 @@ const sendEmailDaily = async () => {
 };
 
 // Schedule the task to run every day at 6:00 PM
-schedule.scheduleJob("00 19 * * *", () => {
-  console.log("Running scheduled task for daily milk yield report");
+schedule.scheduleJob("00 18 * * *", () => {
+  console.log(
+    "Running scheduled task for daily milk yield report - Only alerts"
+  );
   sendEmailDaily();
 });
 
