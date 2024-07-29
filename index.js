@@ -128,7 +128,7 @@ const sendVerificationEmail = async (recipientDetails) => {
           following link:
         </p>
         <a
-          href="http://localhost:3000/verify/${verificationToken}"
+          href="https://nareshwadi-goshala.onrender.com/verify/${verificationToken}"
           style="color: #4a90e2; text-decoration: none; font-weight: bold"
           >Verify Email</a
         >
