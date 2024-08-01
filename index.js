@@ -15,7 +15,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 mongoose
-  .connect("mongodb+srv://dbUser:abcd1234@cluster0.zqc82gq.mongodb.net/")
+  .connect("mongodb+srv://dbUser:abcd1234@cluster0.zqc82gq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -53,8 +56,8 @@ const sendVerificationEmail = async (recipientDetails) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "nareshwadi.gaushalaapp@somaiya.edu",
-      pass: "kfvgcwmmdeeewwjm",
+      user: "rheacode@gmail.com",
+      pass: "bwchfojovfakrqtv",
     },
   });
 
@@ -128,7 +131,7 @@ const sendVerificationEmail = async (recipientDetails) => {
           following link:
         </p>
         <a
-          href="https://nareshwadi-goshala.onrender.com/verify/${verificationToken}"
+          href="http://localhost:3000/verify/${verificationToken}"
           style="color: #4a90e2; text-decoration: none; font-weight: bold"
           >Verify Email</a
         >
@@ -471,6 +474,8 @@ app.post("/addCattle", async (req, res) => {
       return res.status(400).send({ message: "Invalid herd lifecycle" });
     }
 
+  
+
     const newCattle = new Cattle({
       name,
       type,
@@ -523,6 +528,18 @@ app.post("/addCattle", async (req, res) => {
   } catch (error) {
     console.error("Error adding cattle:", error);
     res.status(500).send({ message: "Error adding cattle" });
+  }
+});
+
+// Endpoint to get all cattle IDs
+app.get('/getcattleID', async (req, res) => {
+  try {
+    const cattle = await Cattle.find({}, { cattleid: 1, _id: 0 }); // Fetch only the cattleid field
+    const cattleIds = cattle.map(c => c.cattleid);
+    res.status(200).json(cattleIds);
+  } catch (error) {
+    console.error('Error fetching cattle IDs:', error);
+    res.status(500).send({ message: 'Error fetching cattle IDs' });
   }
 });
 
@@ -1182,8 +1199,8 @@ const calculateTotalYield = async () => {
 const transporter1 = nodemailer.createTransport({
   service: "gmail", // e.g., 'gmail'
   auth: {
-    user: "nareshwadi.gaushalaapp@somaiya.edu",
-    pass: "kfvgcwmmdeeewwjm",
+    user: "rheacode@gmail.com",
+    pass: "bwchfojovfakrqtv",
   },
 });
 
@@ -1198,7 +1215,7 @@ const sendEmailWeekly = async (totalYield) => {
 
     const emailPromises = users.map((user) => {
       const mailOptions = {
-        from: "nareshwadi.gaushalaapp@somaiya.edu",
+        from: "rheacode@gmail.com",
         to: user.email,
         subject: "Weekly Milk Yield Report",
         text: `The total milk yield this week was: ${totalYield} liters.`,
@@ -1312,7 +1329,7 @@ const sendEmailDaily = async () => {
       `;
 
       const mailOptions = {
-        from: "nareshwadi.gaushalaapp@somaiya.edu",
+        from: "rheacode@gmail.com",
         to: user.email,
         subject: "Daily Milk Yield Report",
         html: emailContent,
@@ -1329,7 +1346,7 @@ const sendEmailDaily = async () => {
 };
 
 // Schedule the task to run every day at 6:00 PM
-schedule.scheduleJob("00 18 * * *", () => {
+schedule.scheduleJob("50 23 * * *", () => {
   console.log(
     "Running scheduled task for daily milk yield report - Only alerts"
   );
@@ -1367,7 +1384,7 @@ app.get("/getReports", async (req, res) => {
           reportData.push({
             cattleName: cattle.name,
             groupName: cattle.group ? cattle.group.name : "N/A",
-            milkingCapacity: cattle.milkCapacity,
+            milkingCapacity: cattle.milkingCapacity,
             session1: session.sess1 || 0,
             session2: session.sess2 || 0,
             milkman1: session.milkman1 || "N/A",
