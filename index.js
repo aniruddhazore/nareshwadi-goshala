@@ -436,6 +436,7 @@ app.put("/users/:id/password", async (req, res) => {
 
 // Endpoint to add new cattle
 app.post("/addCattle", async (req, res) => {
+  
   try {
     const {
       name,
@@ -445,7 +446,7 @@ app.post("/addCattle", async (req, res) => {
       herd_lifecycle,
       health_status,
       housingType,
-      milkingCapacity,
+      milkCapacity,
       cattleid,
       identificationMark,
       weight,
@@ -484,7 +485,7 @@ app.post("/addCattle", async (req, res) => {
       dob: parsedDob,
       health_status,
       housingType,
-      milkingCapacity,
+      milkCapacity,
       cattleid,
       identificationMark,
       weight,

@@ -40,7 +40,7 @@ const cattleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  milkCapacity: {
+  milkingCapacity: {
     type: Number,
     default: 0,
   },
