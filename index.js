@@ -1385,7 +1385,7 @@ app.get("/getReports", async (req, res) => {
           reportData.push({
             cattleName: cattle.name,
             groupName: cattle.group ? cattle.group.name : "N/A",
-            milkingCapacity: cattle.milkingCapacity,
+            milkingCapacity: cattle.milkCapacity,
             session1: session.sess1 || 0,
             session2: session.sess2 || 0,
             milkman1: session.milkman1 || "N/A",
