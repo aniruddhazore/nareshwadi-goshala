@@ -71,75 +71,78 @@ const sendVerificationEmail = async (recipientDetails) => {
     subject: "Welcome to Nareshwadi Dairy App",
     html: `
 <div
+  style="
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    color: #333;
+    max-width: 600px;
+    margin: auto;
+  "
+>
+  <div
+    style="
+      background-color: #b592ff;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    "
+  >
+    <img
+      src="../assets/logo-new-dairy.png"
+      alt="Logo"
+      style="max-width: 150px; height: auto; margin-bottom: 15px"
+    />
+    <h1 style="margin: 0; font-size: 24px; font-weight: 700">
+      Welcome to Nareshwadi Dairy App
+    </h1>
+  </div>
+  <div style="margin-top: 20px; padding: 20px">
+    <p>Hello ${name},</p>
+    <p>
+      You have been added as a ${userType} to Nareshwadi Dairy App. You can
+      login to the app using the given email id and password.
+    </p>
+    <div
       style="
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        padding: 20px;
+        border: 1px solid #4a90e2;
         border-radius: 8px;
-        background-color: #f8f9fa;
-        color: #333;
-        max-width: 600px;
-        margin: auto;
+        padding: 15px;
+        background-color: #4a90e2;
+        color: #fff;
+        margin-bottom: 20px;
       "
     >
-      <div
-        style="
-          background-color: #b592ff;
-          color: white;
-          padding: 20px;
-          border-radius: 8px;
-          text-align: center;
-        "
-      >
-        <img
-          src="../assets/logo-new-dairy.png"
-          alt="Logo"
-          style="
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 15px;
-          "
-        />
-        <h1 style="margin: 0; font-size: 24px; font-weight: 700">
-          Welcome to Nareshwadi Dairy App
-        </h1>
-      </div>
-      <div style="margin-top: 20px; padding: 20px">
-        <p>Hello ${name},</p>
-        <p>
-          You have been added as a ${userType} to Nareshwadi Dairy App. You can
-          login to the app using the given email id and password.
-        </p>
-        <div
-          style="
-            border: 1px solid #4a90e2;
-            border-radius: 8px;
-            padding: 15px;
-            background-color: #4a90e2;
-            color: #fff;
-            margin-bottom: 20px;
-          "
-        >
-          <p style="margin: 0; font-weight: bold">Email:</p>
-          <p style="margin: 0">${email}</p>
-          <br />
-          <p style="margin: 0; font-weight: bold">Password:</p>
-          <p style="margin: 0">${password}</p>
-        </div>
-        <p>
-          Before logging in, make sure to verify your email by clicking on the
-          following link:
-        </p>
-        <a
-          href="http://localhost:3000/verify/${verificationToken}"
-          style="color: #4a90e2; text-decoration: none; font-weight: bold"
-          >Verify Email</a
-        >
-        <p style="background-color: rgb(126, 214, 153); color: white; padding:10px;border-radius:5px">
-          Note: You can change the password to whatever you wish once you log in.
-        </p>
-      </div>
+      <p style="margin: 0; font-weight: bold">Email:</p>
+      <p style="margin: 0; color:#fff ; text-decoration:none">${email}</p>
+      <br />
+      <p style="margin: 0; font-weight: bold">Password:</p>
+      <p style="margin: 0">${password}</p>
     </div>
+    <p>
+      Before logging in, make sure to verify your email by clicking on the
+      following link:
+    </p>
+    <a
+      href="https://nareshwadi-goshala.onrender.com/verify/${verificationToken}"
+      style="color: #4a90e2; text-decoration: none; font-weight: bold"
+      >Verify Email</a
+    >
+    <p
+      style="
+        background-color: rgb(126, 214, 153);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+      "
+    >
+      Note: You can change the password to whatever you wish once you log in.
+    </p>
+  </div>
+</div>
 `,
   };
 
@@ -1246,18 +1249,25 @@ const fetchMilkAlerts = async () => {
     const dayBeforeYesterday = new Date();
     dayBeforeYesterday.setDate(today.getDate() - 2);
 
+    console.log("Fetching milk entries from", dayBeforeYesterday, "to", today);
+
     const milkEntries = await Milk.find({
       date: { $gte: dayBeforeYesterday, $lte: today },
       "data.sess1": { $exists: true },
       "data.sess2": { $exists: true },
     });
 
+    console.log("Milk entries found:", milkEntries.length);
+
     const alerts = [];
 
     for (const entry of milkEntries) {
       for (const record of entry.data) {
         const cattle = await Cattle.findOne({ name: record.cattleName });
-        if (!cattle) continue;
+        if (!cattle) {
+          console.log("Cattle not found for record:", record);
+          continue;
+        }
 
         const totalMilk = record.sess1 + record.sess2;
         if (totalMilk < 2 * cattle.milkCapacity) {
@@ -1272,7 +1282,7 @@ const fetchMilkAlerts = async () => {
       }
     }
 
-    console.log("Fetched alerts:", alerts); // Add this line for debugging
+    console.log("Fetched alerts:", alerts.length ? alerts : "None");
     return alerts;
   } catch (error) {
     console.error("Error fetching milk alerts:", error);
@@ -1280,57 +1290,70 @@ const fetchMilkAlerts = async () => {
   }
 };
 
+const groupAlertsByDate = (alerts) => {
+  return alerts.reduce((grouped, alert) => {
+    const { date } = alert;
+    if (!grouped[date]) {
+      grouped[date] = [];
+    }
+    grouped[date].push(alert);
+    return grouped;
+  }, {});
+};
+
 const sendEmailDaily = async () => {
   try {
     const alerts = await fetchMilkAlerts(); // Fetch alerts here
-
-    if (!Array.isArray(alerts) || alerts.length === 0) {
-      console.log("No alerts found or alerts is not an array.");
-      return; // Exit function if no alerts or alerts is not an array
-    }
 
     // Fetch users who are Admin or Superuser
     const users = await User.find({
       userType: { $in: ["Admin", "Superuser"] },
     });
 
+    const groupedAlerts = groupAlertsByDate(alerts);
+
     const emailPromises = users.map((user) => {
       // Construct the table content for email
       const emailContent = `
         <h1>Daily Milk Alerts</h1>
-        <p>the following cattle have been producing milk below their expected threshold. Please take a moment to review their status:</p>
-        <table style="border-collapse: collapse; width: 100%;">
-          <thead>
-  <tr style="background-color: #4c669f; color: white;">
-    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Cattle Name</th>
-    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Capacity / Session</th>
-    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 1</th>
-    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 2</th>
-    <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Date</th>
-  </tr>
-</thead>
-
-          <tbody>
-            ${alerts
-              .map(
-                (alert) => `
-              <tr>
-                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.cattleName}</td>
-                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.milkingCapacity}</td>
-                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.session1}</td>
-                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.session2}</td>
-                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.date}</td>
-              </tr>
-            `
-              )
-              .join("")}
-          </tbody>
-        </table>
-        <p style="margin-top: 20px;">Please find the daily milk alerts above.</p>
+        <p>The following cattle have been producing milk below their expected threshold. Please take a moment to review their status:</p>
+        ${Object.keys(groupedAlerts).length > 0 
+          ? Object.entries(groupedAlerts)
+            .map(
+              ([date, dailyAlerts]) => `
+                <h2>${date}</h2>
+                <table style="border-collapse: collapse; width: 100%;">
+                  <thead>
+                    <tr style="background-color: #4c669f; color: white;">
+                      <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Cattle Name</th>
+                      <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Capacity / Session</th>
+                      <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 1</th>
+                      <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Session 2</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${dailyAlerts
+                      .map(
+                        (alert) => `
+                          <tr>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.cattleName}</td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.milkingCapacity}</td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.session1}</td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.session2}</td>
+                          </tr>
+                        `
+                      )
+                      .join("")}
+                  </tbody>
+                </table>
+              `
+            )
+            .join("")
+          : <p>No alerts found for today.</p>}
       `;
 
       const mailOptions = {
-        from: "rheacode@gmail.com",
+        from: "nareshwadi.gaushalaapp@somaiya.edu",
         to: user.email,
         subject: "Daily Milk Yield Report",
         html: emailContent,
@@ -1346,13 +1369,12 @@ const sendEmailDaily = async () => {
   }
 };
 
-// Schedule the task to run every day at 6:00 PM
-schedule.scheduleJob("50 23 * * *", () => {
-  console.log(
-    "Running scheduled task for daily milk yield report - Only alerts"
-  );
+// Schedule the task to run every day at 6:30 PM
+schedule.scheduleJob("30 18 * * *", () => {
+  console.log("Running scheduled task for daily milk yield report - Only alerts");
   sendEmailDaily();
 });
+ 
 
 // Endpoint to get total milk yeild by date
 // Route to get reports based on date range
