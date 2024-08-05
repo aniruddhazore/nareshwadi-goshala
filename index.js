@@ -56,7 +56,7 @@ const sendVerificationEmail = async (recipientDetails) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "rheacode@gmail.com",
+      user: "nareshwadi.gaushalaapp@somaiya.edu",
       pass: "bwchfojovfakrqtv",
     },
   });
@@ -66,7 +66,7 @@ const sendVerificationEmail = async (recipientDetails) => {
 
   // Email content for the new user
   const newUserMailOptions = {
-    from: "dairytrack@gmail.com",
+    from: "nareshwadi.gaushalaapp@somaiya.edu",
     to: email,
     subject: "Welcome to Nareshwadi Dairy App",
     html: `
@@ -156,7 +156,7 @@ const sendVerificationEmail = async (recipientDetails) => {
 
   // Email content for Superusers
   const superuserMailOptions = {
-    from: "dairytrack@gmail.com",
+    from: "nareshwadi.gaushalaapp@somaiya.edu",
     to: superusers.map((user) => user.email),
     subject: "New User Added",
     html: `
@@ -1203,9 +1203,9 @@ const calculateTotalYield = async () => {
 const transporter1 = nodemailer.createTransport({
   service: "gmail", // e.g., 'gmail'
   auth: {
-    user: "rheacode@gmail.com",
-    pass: "bwchfojovfakrqtv",
-  },
+      user: "nareshwadi.gaushalaapp@somaiya.edu",
+      pass: "bwchfojovfakrqtv",
+    },
 });
 
 // milk yield email
@@ -1219,7 +1219,7 @@ const sendEmailWeekly = async (totalYield) => {
 
     const emailPromises = users.map((user) => {
       const mailOptions = {
-        from: "rheacode@gmail.com",
+        from: "nareshwadi.gaushalaapp@somaiya.edu",
         to: user.email,
         subject: "Weekly Milk Yield Report",
         text: `The total milk yield this week was: ${totalYield} liters.`,
