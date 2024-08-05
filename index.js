@@ -1314,7 +1314,7 @@ const sendEmailDaily = async () => {
 
     const emailPromises = users.map((user) => {
       // Construct the table content for email
-      const emailContent = `
+      let emailContent = `
         <h1>Daily Milk Alerts</h1>
         <p>The following cattle have been producing milk below their expected threshold. Please take a moment to review their status:</p>
         ${Object.keys(groupedAlerts).length > 0 
@@ -1340,16 +1340,14 @@ const sendEmailDaily = async () => {
                             <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.milkingCapacity}</td>
                             <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.session1}</td>
                             <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${alert.session2}</td>
-                          </tr>
-                        `
+                          </tr>`
                       )
                       .join("")}
                   </tbody>
-                </table>
-              `
+                </table>`
             )
             .join("")
-          : <p>No alerts found for today.</p>}
+          : `<p>No alerts found for today.</p>`}
       `;
 
       const mailOptions = {
@@ -1363,9 +1361,9 @@ const sendEmailDaily = async () => {
     });
 
     await Promise.all(emailPromises);
-    console.log("Daily emails sent successfully");
+    console.log("Daily milk alerts sent successfully.");
   } catch (error) {
-    console.error("Error sending daily emails:", error);
+    console.error("Error sending daily milk alerts:", error);
   }
 };
 
