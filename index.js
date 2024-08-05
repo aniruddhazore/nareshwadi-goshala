@@ -111,8 +111,8 @@ const sendVerificationEmail = async (recipientDetails) => {
         border: 1px solid #4a90e2;
         border-radius: 8px;
         padding: 15px;
-        background-color: #4a90e2;
-        color: #fff;
+        
+        color: #000;
         margin-bottom: 20px;
       "
     >
