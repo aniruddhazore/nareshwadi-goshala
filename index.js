@@ -57,7 +57,7 @@ const sendVerificationEmail = async (recipientDetails) => {
     service: "gmail",
     auth: {
       user: "nareshwadi.gaushalaapp@somaiya.edu",
-      pass: "bwchfojovfakrqtv",
+      pass: "kfvgcwmmdeeewwjm",
     },
   });
 
@@ -1204,7 +1204,7 @@ const transporter1 = nodemailer.createTransport({
   service: "gmail", // e.g., 'gmail'
   auth: {
       user: "nareshwadi.gaushalaapp@somaiya.edu",
-      pass: "bwchfojovfakrqtv",
+      pass: "kfvgcwmmdeeewwjm",
     },
 });
 
