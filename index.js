@@ -154,6 +154,76 @@ const sendVerificationEmail = async (recipientDetails) => {
     console.log("Error sending new user email", error);
   }
 
+  app.post("/register", async (req, res) => {
+    const { name, email, password, phone, userType, profileImage } = req.body;
+  
+    // Validate required fields
+    if (!name || !password || !phone || !userType) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+  
+    // Validate password
+    if (!validatePassword(password)) {
+      return res.status(400).json({
+        message: "Password must be alphanumeric and at least 8 characters long.",
+      });
+    }
+  
+    try {
+      // Check if the user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already in use." });
+      }
+  
+      // Generate a verification token
+      const verificationToken = generateSecretKey();
+  
+      const isVerified = userType === "Milkman" ? true : false;
+  
+      // Create a new user with the token
+      const newUser = new User({
+        name,
+        email,
+        password,
+        phone,
+        userType,
+        profileImage,
+        verified: false,
+        verificationToken, // Set the verification token
+      });
+  
+      await newUser.save();
+  
+      // Fetch all Superusers
+      const superusers = await User.find({ userType: "Superuser" });
+  
+  // Send verification email only if user is not already verified
+  if (!isVerified) {
+    await sendVerificationEmail({
+      name,
+      email,
+      password,
+      verificationToken,
+      userType,
+      superusers,
+    });
+  }
+  
+      res.status(201).json({
+        _id: newUser._id,
+        message: isVerified
+          ? "User registered and verified successfully."
+          : "User registered successfully. Please verify your account via email.",
+      });
+    } catch (error) {
+      console.error("Error in register endpoint:", error.message);
+      res
+        .status(500)
+        .json({ message: "Registration failed", error: error.message });
+    }
+  });
+  
   // Email content for Superusers
   const superuserMailOptions = {
     from: "nareshwadi.gaushalaapp@somaiya.edu",
@@ -247,71 +317,6 @@ const sendVerificationEmail = async (recipientDetails) => {
     console.log("Error sending Superuser notification email", error);
   }
 };
-
-app.post("/register", async (req, res) => {
-  const { name, email, password, phone, userType, profileImage } = req.body;
-
-  // Validate required fields
-  if (!name || !email || !password || !phone || !userType) {
-    return res.status(400).json({ message: "All fields are required." });
-  }
-
-  // Validate password
-  if (!validatePassword(password)) {
-    return res.status(400).json({
-      message: "Password must be alphanumeric and at least 8 characters long.",
-    });
-  }
-
-  try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use." });
-    }
-
-    // Generate a verification token
-    const verificationToken = generateSecretKey();
-
-    // Create a new user with the token
-    const newUser = new User({
-      name,
-      email,
-      password,
-      phone,
-      userType,
-      profileImage,
-      verified: false,
-      verificationToken, // Set the verification token
-    });
-
-    await newUser.save();
-
-    // Fetch all Superusers
-    const superusers = await User.find({ userType: "Superuser" });
-
-    // Send verification email to the new user and notify Superusers
-    await sendVerificationEmail({
-      name,
-      email,
-      password,
-      verificationToken,
-      userType,
-      superusers,
-    });
-
-    res.status(201).json({
-      _id: newUser._id,
-      message:
-        "User registered successfully. Please verify your account via email.",
-    });
-  } catch (error) {
-    console.error("Error in register endpoint:", error.message);
-    res
-      .status(500)
-      .json({ message: "Registration failed", error: error.message });
-  }
-});
 
 app.get("/verify/:token", async (req, res) => {
   try {
