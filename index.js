@@ -444,7 +444,6 @@ app.put("/users/:id/password", async (req, res) => {
 
 // Endpoint to add new cattle
 app.post("/addCattle", async (req, res) => {
-  
   try {
     const {
       name,
@@ -454,7 +453,7 @@ app.post("/addCattle", async (req, res) => {
       herd_lifecycle,
       health_status,
       housingType,
-      milkCapacity,
+      milkingCapacity,
       cattleid,
       identificationMark,
       weight,
@@ -483,7 +482,9 @@ app.post("/addCattle", async (req, res) => {
       return res.status(400).send({ message: "Invalid herd lifecycle" });
     }
 
-  
+     // Find the highest serial number
+    const lastCattle = await Cattle.findOne().sort({ serialNumber: -1 });
+    const newSerialNumber = lastCattle ? lastCattle.serialNumber + 1 : 1;
 
     const newCattle = new Cattle({
       name,
@@ -493,7 +494,7 @@ app.post("/addCattle", async (req, res) => {
       dob: parsedDob,
       health_status,
       housingType,
-      milkCapacity,
+      milkingCapacity,
       cattleid,
       identificationMark,
       weight,
@@ -510,6 +511,7 @@ app.post("/addCattle", async (req, res) => {
         ? moment(dewormingDate, "YYYY-MM-DD").toDate()
         : null,
       group,
+      serialNumber: newSerialNumber, 
     });
 
     await newCattle.save();
@@ -539,6 +541,33 @@ app.post("/addCattle", async (req, res) => {
     res.status(500).send({ message: "Error adding cattle" });
   }
 });
+
+// To update serial number
+app.put("/cattle/:id/serial-number", async (req, res) => {
+  const { id } = req.params;  // Cattle ID from URL
+  const { serialNumber } = req.body;  // Only expecting serialNumber in the body
+
+  try {
+    if (!serialNumber) {
+      return res.status(400).json({ error: "Serial number is required" });
+    }
+
+    // Find the cattle by ID
+    const cattle = await Cattle.findById(id);
+    if (!cattle) {
+      return res.status(404).json({ error: "Cattle not found" });
+    }
+
+    // Update the cattle's serial number
+    cattle.serialNumber = serialNumber;
+    await cattle.save();
+
+    res.json({ message: "Serial number updated successfully" });
+  } catch (err) {
+    console.log("Error updating serial number:", err);
+    res.status(500).json({ error: err.message });
+  }
+})
 
 // Endpoint to get all cattle IDs
 app.get('/getcattleID', async (req, res) => {
@@ -599,17 +628,30 @@ app.put("/updateCattle/:id", async (req, res) => {
   }
 });
 
-// Endpoint to delete cattle
+// Endpoint to delete cattle and adjust serial numbers
 app.delete("/deleteCattle/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const cattle = await Cattle.findByIdAndDelete(id);
+    
+    // Find the cattle by ID to get the serial number before deletion
+    const cattleToDelete = await Cattle.findById(id);
 
-    if (!cattle) {
+    if (!cattleToDelete) {
       return res.status(404).send({ message: "Cattle not found" });
     }
 
-    res.status(200).send({ message: "Cattle deleted successfully!" });
+    const deletedSerialNumber = cattleToDelete.serialNumber;
+
+    // Delete the cattle
+    await Cattle.findByIdAndDelete(id);
+
+    // Adjust the serial numbers for all cattle with a higher serial number
+    await Cattle.updateMany(
+      { serialNumber: { $gt: deletedSerialNumber } }, // Find cattle with serialNumber greater than the deleted one
+      { $inc: { serialNumber: -1 } } // Decrease their serialNumber by 1
+    );
+
+    res.status(200).send({ message: "Cattle deleted and serial numbers adjusted successfully!" });
   } catch (error) {
     console.error("Error deleting cattle:", error);
     res.status(500).send({ message: "Error deleting cattle" });
