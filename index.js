@@ -153,12 +153,13 @@ const sendVerificationEmail = async (recipientDetails) => {
   } catch (error) {
     console.log("Error sending new user email", error);
   }
+};
 
   app.post("/register", async (req, res) => {
     const { name, email, password, phone, userType, profileImage } = req.body;
   
     // Validate required fields
-    if (!name || !password || !phone || !userType) {
+    if (!name || !email || !password || !phone || !userType) {
       return res.status(400).json({ message: "All fields are required." });
     }
   
@@ -189,7 +190,7 @@ const sendVerificationEmail = async (recipientDetails) => {
         phone,
         userType,
         profileImage,
-        verified: false,
+        verified: isVerified,
         verificationToken, // Set the verification token
       });
   
@@ -197,6 +198,7 @@ const sendVerificationEmail = async (recipientDetails) => {
   
       // Fetch all Superusers
       const superusers = await User.find({ userType: "Superuser" });
+      const adminmail = await User.find({ userType: "Admin" });
   
   // Send verification email only if user is not already verified
   if (!isVerified) {
@@ -207,6 +209,15 @@ const sendVerificationEmail = async (recipientDetails) => {
       verificationToken,
       userType,
       superusers,
+    });
+  } else {
+    await milkmanDetails({
+      name,
+      email,
+      password,
+      verificationToken,
+      userType,
+      adminmail,
     });
   }
   
@@ -224,99 +235,105 @@ const sendVerificationEmail = async (recipientDetails) => {
     }
   });
   
-  // Email content for Superusers
-  const superuserMailOptions = {
-    from: "nareshwadi.gaushalaapp@somaiya.edu",
-    to: superusers.map((user) => user.email),
-    subject: "New User Added",
-    html: `
-<div
-      style="
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        padding: 20px;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-        color: #333;
-        max-width: 600px;
-        margin: auto;
-      "
-    >
-      <div
-        style="
-          background-color: #b592ff;
-          color: white;
-          padding: 20px;
-          border-radius: 8px;
-          text-align: center;
-        "
-      >
-        <img
-        
-          src="../assets/logo-new-dairy.png"
-          alt="Logo"
+  
+  const milkmanDetails = async (recipientDetails) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "rheacode@gmail.com",
+        pass: "bwchfojovfakrqtv",
+      },
+    });
+  
+    const { name, email, password, verificationToken, userType, adminmail } =
+      recipientDetails;
+  
+      const newMilkmanMailOptions = {
+        from: "dairytrack@gmail.com",
+        to: adminmail.map((user) => user.email),
+        subject: "Welcome to Nareshwadi Dairy App",
+        html: `
+    <div
           style="
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 15px;
-          "
-        />
-        <h1 style="margin: 0; font-size: 24px; font-weight: 700">
-          Notification from Nareshwadi Dairy App
-        </h1>
-      </div>
-      <div style="margin-top: 20px; padding: 20px">
-        <p>Hello Superuser,</p>
-        <p
-          style="
-            margin: 0;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-left: 4px solid #b592ff;
-            border-radius: 4px;
-          "
-        >
-          A new user has been added to the Nareshwadi Dairy App.
-        </p>
-        <div
-          style="
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #4a90e2;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
             border-radius: 8px;
-            background-color: #ffffff;
+            background-color: #f8f9fa;
             color: #333;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
           "
         >
-          <p style="margin: 0; font-weight: bold">Name:</p>
-          <p style="margin: 0">${name}</p>
-          <br />
-          <p style="margin: 0; font-weight: bold">Email:</p>
-          <p style="margin: 0">${email}</p>
-          <br />
-          <p style="margin: 0; font-weight: bold">User Type:</p>
-          <p style="margin: 0">${userType}</p>
+          <div
+            style="
+              background-color: #b592ff;
+              color: white;
+              padding: 20px;
+              border-radius: 8px;
+              text-align: center;
+            "
+          >
+            <img
+              src="../assets/logo-new-dairy.png"
+              alt="Logo"
+              style="
+                max-width: 150px;
+                height: auto;
+                margin-bottom: 15px;
+              "
+            />
+            <h1 style="margin: 0; font-size: 24px; font-weight: 700">
+              Welcome to Nareshwadi Dairy App
+            </h1>
+          </div>
+          <div style="margin-top: 20px; padding: 20px">
+            <p>Hello Admin,</p>
+            <p>
+              ${name} has been added as a ${userType} to Nareshwadi Dairy App. The credentials to
+              login to the app are as follows:
+            </p>
+            <div
+              style="
+                border: 1px solid #4a90e2;
+                border-radius: 8px;
+                padding: 15px;
+                background-color: #4a90e2;
+                color: #fff;
+                margin-bottom: 20px;
+              "
+            >
+              <p style="margin: 0; font-weight: bold">Email:</p>
+              <p style="margin: 0; ">${email}</p>
+              <br />
+              <p style="margin: 0; font-weight: bold">Password:</p>
+              <p style="margin: 0">${password}</p>
+            </div>
+            <p>
+              Before logging in, make sure to verify your email by clicking on the
+              following link:
+            </p>
+            <a
+              href="http://localhost:3000/verify/${verificationToken}"
+              style="color: #4a90e2; text-decoration: none; font-weight: bold"
+              >Verify Email</a
+            >
+            <p style="background-color: rgb(126, 214, 153); color: white; padding:10px;border-radius:5px">
+              Note: You can change the password to whatever you wish once you log in.
+            </p>
+          </div>
         </div>
-        <p style="margin-top: 20px">
-          The user will need to verify their email address before logging in.
-          You can view and manage users from your admin panel.
-        </p>
-        <p>Thank you,</p>
-        <p>Nareshwadi Dairy App</p>
-      </div>
-    </div>
-`,
+    `,
+      };
+    
+      try {
+        // Send email to the new user
+        await transporter.sendMail(newMilkmanMailOptions);
+        console.log("New milkman email sent successfully");
+      } catch (error) {
+        console.log("Error sending new milkman email", error);
+      }
   };
-
-  try {
-    // Send email to all Superusers
-    await transporter.sendMail(superuserMailOptions);
-    console.log("Superuser notification email sent successfully");
-  } catch (error) {
-    console.log("Error sending Superuser notification email", error);
-  }
-};
 
 app.get("/verify/:token", async (req, res) => {
   try {
