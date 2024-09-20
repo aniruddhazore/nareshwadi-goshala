@@ -705,6 +705,7 @@ app.get("/groups/:groupId/getcattle", async (req, res) => {
     const cattle = await Cattle.find(query).populate("group").populate("Vaccination");
     res.json(cattle);
   } catch (error) {
+    console.error("Error fetching cattle:", error); // Add this line for logging
     res.status(500).send("Server Error");
   }
 });
