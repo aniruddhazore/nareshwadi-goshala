@@ -702,7 +702,7 @@ app.get("/groups/:groupId/getcattle", async (req, res) => {
   if (housingType) query.housingType = housingType;
 
   try {
-    const cattle = await Cattle.find(query).populate("group");
+    const cattle = await Cattle.find(query).populate("group").populate("Vaccination");
     res.json(cattle);
   } catch (error) {
     res.status(500).send("Server Error");
