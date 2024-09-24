@@ -10,7 +10,11 @@ const moment = require("moment");
 const app = express();
 const port = 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow requests from all origins. In production, you should restrict this to trusted domains.
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
