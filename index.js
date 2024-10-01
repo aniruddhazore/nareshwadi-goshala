@@ -310,15 +310,7 @@ const sendVerificationEmail = async (recipientDetails) => {
               <p style="margin: 0; font-weight: bold">Password:</p>
               <p style="margin: 0">${password}</p>
             </div>
-            <p>
-              Before logging in, make sure to verify your email by clicking on the
-              following link:
-            </p>
-            <a
-              href="http://localhost:3000/verify/${verificationToken}"
-              style="color: #4a90e2; text-decoration: none; font-weight: bold"
-              >Verify Email</a
-            >
+            
             <p style="background-color: rgb(126, 214, 153); color: white; padding:10px;border-radius:5px">
               Note: You can change the password to whatever you wish once you log in.
             </p>
@@ -512,7 +504,7 @@ app.post("/addCattle", async (req, res) => {
       dob: parsedDob,
       health_status,
       housingType,
-      milkingCapacity,
+      milkCapacity,
       cattleid,
       identificationMark,
       weight,
