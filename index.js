@@ -471,7 +471,7 @@ app.post("/addCattle", async (req, res) => {
       herd_lifecycle,
       health_status,
       housingType,
-      milkingCapacity,
+      milkCapacity,
       cattleid,
       identificationMark,
       weight,
