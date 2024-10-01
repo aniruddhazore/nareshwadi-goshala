@@ -241,8 +241,8 @@ const sendVerificationEmail = async (recipientDetails) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "rheacode@gmail.com",
-        pass: "bwchfojovfakrqtv",
+        user: "nareshwadi.gaushalaapp@somaiya.edu",
+        pass: "kfvgcwmmdeeewwjm",
       },
     });
   
