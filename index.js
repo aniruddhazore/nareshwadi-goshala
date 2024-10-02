@@ -687,6 +687,7 @@ app.get('/getcattleID', async (req, res) => {
 
 app.get("/getCattle", async (req, res) => {
   try {
+    console.log(req.body)
     const cattle = await Cattle.find().populate("group");
     res.status(200).send(cattle);
   } catch (error) {
