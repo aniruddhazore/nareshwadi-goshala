@@ -923,17 +923,27 @@ app.post("/milk", async (req, res) => {
 
 app.get("/milk/:date", async (req, res) => {
   try {
-    const { date } = req.params;
+    let { date } = req.params;
 
-    // Validate the date format (YYYY-MM-DD)
-    if (!moment(date, "YYYY-MM-DD", true).isValid()) {
+    // Attempt to parse the date using moment (allowing various formats)
+    const parsedDate = moment(date, ["YYYY-MM-DD", "MM/DD/YYYY", "DD-MM-YYYY"], true);
+    
+    // Check if the date is valid after parsing
+    if (!parsedDate.isValid()) {
       return res.status(400).send({ message: "Invalid date format" });
     }
 
-    // Convert the date string to a Date object
-    const milkDate = moment(date, "YYYY-MM-DD").toDate();
+    // Convert the parsed date to the standard format (YYYY-MM-DD)
+    const validDate = parsedDate.format("YYYY-MM-DD");
 
-    const milkData = await Milk.findOne({ date: milkDate });
+    // Get the start and end of the valid date
+    const startOfDay = moment(validDate, "YYYY-MM-DD").startOf('day').toDate();
+    const endOfDay = moment(validDate, "YYYY-MM-DD").endOf('day').toDate();
+
+    // Query MongoDB for records within this date range
+    const milkData = await Milk.findOne({
+      date: { $gte: startOfDay, $lt: endOfDay }
+    });
 
     if (!milkData) {
       return res.status(404).send({ message: "Milk data not found for the given date" });
