@@ -154,6 +154,100 @@ const sendVerificationEmail = async (recipientDetails) => {
   } catch (error) {
     console.log("Error sending new user email", error);
   }
+
+
+// Email content for Superusers
+  const superuserMailOptions = {
+    from: "dairytrack@gmail.com",
+    to: superusers.map((user) => user.email),
+    subject: "New User Added",
+    html: `
+<div
+      style="
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        color: #333;
+        max-width: 600px;
+        margin: auto;
+      "
+    >
+      <div
+        style="
+          background-color: #b592ff;
+          color: white;
+          padding: 20px;
+          border-radius: 8px;
+          text-align: center;
+        "
+      >
+        <img
+        
+          src="../assets/logo-new-dairy.png"
+          alt="Logo"
+          style="
+            max-width: 150px;
+             height: auto;
+            margin-bottom: 15px;
+          "
+        />
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700">
+          Notification from Nareshwadi Dairy App
+        </h1>
+      </div>
+      <div style="margin-top: 20px; padding: 20px">
+        <p>Hello Superuser,</p>
+        <p
+          style="
+            margin: 0;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 4px solid #b592ff;
+            border-radius: 4px;
+          "
+        >
+          A new user has been added to the Nareshwadi Dairy App.
+        </p>
+        <div
+          style="
+            margin-top: 20px;
+            padding: 15px;
+             border: 1px solid #4a90e2;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          "
+        >
+          <p style="margin: 0; font-weight: bold">Name:</p>
+          <p style="margin: 0">${name}</p>
+          <br />
+          <p style="margin: 0; font-weight: bold">Email:</p>
+          <p style="margin: 0">${email}</p>
+          <br />
+          <p style="margin: 0; font-weight: bold">User Type:</p>
+          <p style="margin: 0">${userType}</p>
+        </div>
+        <p style="margin-top: 20px">
+          The user will need to verify their email address before logging in.
+          You can view and manage users from your admin panel.
+        </p>
+        <p>Thank you,</p>
+        <p>Nareshwadi Dairy App</p>
+      </div>
+    </div>
+`,
+  };
+
+  try {
+ // Send email to all Superusers
+ await transporter.sendMail(superuserMailOptions);
+ console.log("Superuser notification email sent successfully");
+} catch (error) {
+ console.log("Error sending Superuser notification email",error);
+}
 };
 
   app.post("/register", async (req, res) => {
