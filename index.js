@@ -921,19 +921,31 @@ app.post("/milk", async (req, res) => {
   }
 });
 
-// Endpoint to get milk data by date
 app.get("/milk/:date", async (req, res) => {
   try {
     const { date } = req.params;
-    const milkData = await Milk.findOne({
-      date: moment(date, "YYYY-MM-DD").toDate(),
-    });
+
+    // Validate the date format (YYYY-MM-DD)
+    if (!moment(date, "YYYY-MM-DD", true).isValid()) {
+      return res.status(400).send({ message: "Invalid date format" });
+    }
+
+    // Convert the date string to a Date object
+    const milkDate = moment(date, "YYYY-MM-DD").toDate();
+
+    const milkData = await Milk.findOne({ date: milkDate });
+
+    if (!milkData) {
+      return res.status(404).send({ message: "Milk data not found for the given date" });
+    }
+
     res.status(200).send(milkData);
   } catch (error) {
     console.error("Error fetching milk data:", error);
     res.status(500).send({ message: "Error fetching milk data" });
   }
 });
+
 
 // PUT route to update milk entry by ID
 app.put("/milk/:id", async (req, res) => {
