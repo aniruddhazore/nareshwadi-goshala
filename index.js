@@ -925,7 +925,7 @@ app.get("/milk/:date", async (req, res) => {
   try {
     let { date } = req.params;
     // Attempt to parse the date using moment (allowing various formats)
-    const parsedDate = moment(date, ["YYYY-MM-DD", "MM/DD/YYYY", "DD-MM-YYYY"], true);
+    const parsedDate = moment(date, ["YYYY-MM-DD"], true);
     
     // Check if the date is valid after parsing
     if (!parsedDate.isValid()) {
