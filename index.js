@@ -944,10 +944,7 @@ app.get("/milk/:date", async (req, res) => {
       date: { $gte: startOfDay, $lt: endOfDay }
     });
 
-    if (!milkData) {
-      return res.status(404).send({ message: "Milk data not found for the given date" });
-    }
-
+    
     res.status(200).send(milkData);
   } catch (error) {
     console.error("Error fetching milk data:", error);
