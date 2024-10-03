@@ -103,8 +103,8 @@ const cattleSchema = new mongoose.Schema({
   },
   serialNumber: {
     type : Number,
-    required : True ,
-    unique: True ,
+    required : true ,
+    unique: true ,
   }
 });
 
