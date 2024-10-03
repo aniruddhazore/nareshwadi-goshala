@@ -923,7 +923,6 @@ app.post("/milk", async (req, res) => {
 
 app.get("/milk/:date", async (req, res) => {
   try {
-    console.log(date)
     let { date } = req.params;
     // Attempt to parse the date using moment (allowing various formats)
     const parsedDate = moment(date, ["YYYY-MM-DD", "MM/DD/YYYY", "DD-MM-YYYY"], true);
