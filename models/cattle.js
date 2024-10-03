@@ -101,6 +101,11 @@ const cattleSchema = new mongoose.Schema({
     ref: "Group",
     required: false,
   },
+  serialNumber: {
+    type : Number,
+    required : True ,
+    unique: True ,
+  }
 });
 
 const Cattle = mongoose.model("Cattle", cattleSchema);
